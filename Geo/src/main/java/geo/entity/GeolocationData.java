@@ -30,13 +30,13 @@ public class GeolocationData {
     private String city;
 
     @Column
-    private String region;
+    private String region_name;
 
     @Column
-    private String country;
+    private String country_name;
 
     @Column(name = "POSTAL_CODE")
-    private String postalCode;
+    private String zip;
 
     @Column(name = "CREATED", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)

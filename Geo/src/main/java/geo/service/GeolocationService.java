@@ -1,9 +1,10 @@
 package geo.service;
 
 
+import geo.repository.GeolocationDataRepository;
 import lombok.AllArgsConstructor;
 
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,8 +12,18 @@ import org.springframework.stereotype.Service;
 public class GeolocationService {
 
     private final IpstackService ipstackService;
+    private final GeolocationDataRepository geolocationDataRepository;
 
-    public ResponseEntity<String> getByIp(String ip) {
-        return ipstackService.getGeolocationDataByIp(ip);
+    public void getByIp(String ip) {
     }
+
+    public void findAndSaveByIp(String ipAddress) {
+        ipstackService.getGeolocationDataByIp(ipAddress);
+    }
+
+    public void findAndSaveByUrl(String urlAddress) {
+        ipstackService.getGeolocationDataByUrl(urlAddress);
+    }
+
+
 }
