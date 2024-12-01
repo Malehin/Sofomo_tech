@@ -39,6 +39,16 @@ public class ApiLayerController {
        return geolocationService.findAndSaveByUrl(urlRequest.url());
     }
 
+    @PostMapping("/ip/delete")
+    public ResponseEntity<Void> deleteGeolocationByIp(@RequestBody IpRequest ipRequest) {
+        return geolocationService.deleteByIp(ipRequest.ip());
+    }
+
+    @PostMapping("/url/delete")
+    public ResponseEntity<Void> deleteGeolocationByUrl(@RequestBody UrlRequest urlRequest) {
+        return geolocationService.deleteByUrl(urlRequest.url());
+    }
+
 
 
 

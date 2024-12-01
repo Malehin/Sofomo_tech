@@ -3,6 +3,8 @@ package geo.service;
 import geo.entity.GeolocationDataEntity;
 import geo.entity.IpAddressEntity;
 import geo.entity.UrlDataEntity;
+import geo.exception.EmptyApiResponseException;
+import geo.exception.UrlResolutionException;
 import geo.mapper.GeolocationDataMapper;
 import geo.repository.GeolocationDataRepository;
 import geo.repository.IpAddressRepository;
@@ -40,7 +42,7 @@ public class IpstackService {
             String response = restTemplate.getForObject(url, String.class);
 
             if (response.isBlank()) {
-                throw new RuntimeException("API response is empty for IP: " + ipAddress);
+                throw new EmptyApiResponseException("API response is empty for IP: " + ipAddress);
             }
 
             GeolocationDataEntity geolocationDataEntity = geolocationDataMapper.mapFromResponse(response);
@@ -69,7 +71,7 @@ public class IpstackService {
                 String response = restTemplate.getForObject(url, String.class);
 
                 if (response.isBlank()) {
-                    throw new RuntimeException("API response is empty for IP: " + ipAddress);
+                    throw new EmptyApiResponseException("API response is empty for IP: " + ipAddress);
                 }
 
                 GeolocationDataEntity geolocationDataEntity = geolocationDataMapper.mapFromResponse(response);
@@ -82,7 +84,7 @@ public class IpstackService {
                 return savedGeolocationDataEntity;
             }
         } catch (UnknownHostException e) {
-            throw new RuntimeException("Unable to resolve URL to IP address: " + urlAddress, e);
+            throw new UrlResolutionException("Unable to resolve URL to IP address: " + urlAddress);
         }
 
     }
