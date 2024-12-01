@@ -11,7 +11,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "IP_ADDRESS")
-public class IpAddress {
+public class IpAddressEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -11,7 +11,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "URL_DATA")
-public class UrlData {
+public class UrlDataEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

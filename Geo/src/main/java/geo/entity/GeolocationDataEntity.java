@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Table(name = "GEOLOCATION_DATA")
-public class GeolocationData {
+public class GeolocationDataEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

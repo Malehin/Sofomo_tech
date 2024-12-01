@@ -1,7 +1,7 @@
 package geo.repository;
 
-import geo.entity.GeolocationData;
+import geo.entity.GeolocationDataEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface GeolocationDataRepository extends JpaRepository<GeolocationData, Long> {
+public interface GeolocationDataRepository extends JpaRepository<GeolocationDataEntity, Long> {
 }

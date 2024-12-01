@@ -1,9 +1,8 @@
 package geo.service;
 
-
-import geo.entity.GeolocationData;
-import geo.entity.IpAddress;
-import geo.entity.UrlData;
+import geo.entity.GeolocationDataEntity;
+import geo.entity.IpAddressEntity;
+import geo.entity.UrlDataEntity;
 import geo.mapper.GeolocationDataMapper;
 import geo.repository.GeolocationDataRepository;
 import geo.repository.IpAddressRepository;
@@ -30,58 +29,57 @@ public class IpstackService {
     private final UrlDataRepository urlDataRepository;
 
     @Transactional
-    public void getGeolocationDataByIp(String ip) {
+    public GeolocationDataEntity getAndSaveGeolocationDataByIp(String ipAddress) {
 
-        if(ipAddressRepository.existsByIpAddress(ip)){
-            log.info("Data for IpAddress: {} Already exist in Database", ip);
+        if(ipAddressRepository.existsByIpAddress(ipAddress)){
+            log.info("Data for IpAddress: {} Already exist in Database", ipAddress);
+            return null;
         } else{
-            String url = IPSTACK_URL + ip + "?access_key=" + IPSTACK_API_KEY;
+            String url = IPSTACK_URL + ipAddress + "?access_key=" + IPSTACK_API_KEY;
             RestTemplate restTemplate = new RestTemplate();
             String response = restTemplate.getForObject(url, String.class);
 
             if (response.isBlank()) {
-                throw new RuntimeException("API response is empty for IP: " + ip);
+                throw new RuntimeException("API response is empty for IP: " + ipAddress);
             }
 
-            GeolocationData geolocationData = geolocationDataMapper.mapFromResponse(response);
+            GeolocationDataEntity geolocationDataEntity = geolocationDataMapper.mapFromResponse(response);
+            GeolocationDataEntity savedGeolocationDataEntity = geolocationDataRepository.save(geolocationDataEntity);
+            IpAddressEntity ipAddressEntity = new IpAddressEntity();
+            ipAddressEntity.setGeolocationDataId(savedGeolocationDataEntity.getId());
+            ipAddressEntity.setIpAddress(ipAddress);
+            ipAddressRepository.save(ipAddressEntity);
 
-            GeolocationData savedGeolocationData= geolocationDataRepository.save(geolocationData);
-            IpAddress ipAddress = new IpAddress();
-            ipAddress.setGeolocationDataId(savedGeolocationData.getId());
-            ipAddress.setIpAddress(ip);
-            ipAddressRepository.save(ipAddress);
+            return savedGeolocationDataEntity;
         }
     }
 
     @Transactional
-    public void getGeolocationDataByUrl(String urlAddress) {
+    public GeolocationDataEntity getAndSaveGeolocationDataByUrl(String urlAddress) {
         try {
             InetAddress inetAddress = InetAddress.getByName(urlAddress);
-            String ip = inetAddress.getHostAddress();
+            String ipAddress = inetAddress.getHostAddress();
 
-            if(ipAddressRepository.existsByIpAddress(ip)){
-                log.info("Data for IpAddress: {} Already exist in Database", ip);
+            if(urlDataRepository.existsByUrl(urlAddress)){
+                log.info("Data for UrlAddress: {} Already exist in Database", urlAddress);
+                return null;
             } else {
-                String url = IPSTACK_URL + ip + "?access_key=" + IPSTACK_API_KEY;
+                String url = IPSTACK_URL + ipAddress + "?access_key=" + IPSTACK_API_KEY;
                 RestTemplate restTemplate = new RestTemplate();
                 String response = restTemplate.getForObject(url, String.class);
 
                 if (response.isBlank()) {
-                    throw new RuntimeException("API response is empty for IP: " + ip);
+                    throw new RuntimeException("API response is empty for IP: " + ipAddress);
                 }
 
-                GeolocationData geolocationData = geolocationDataMapper.mapFromResponse(response);
+                GeolocationDataEntity geolocationDataEntity = geolocationDataMapper.mapFromResponse(response);
+                GeolocationDataEntity savedGeolocationDataEntity = geolocationDataRepository.save(geolocationDataEntity);
+                UrlDataEntity urlDataEntity = new UrlDataEntity();
+                urlDataEntity.setUrl(urlAddress);
+                urlDataEntity.setGeolocationDataId(savedGeolocationDataEntity.getId());
+                urlDataRepository.save(urlDataEntity);
 
-                GeolocationData savedGeolocationData = geolocationDataRepository.save(geolocationData);
-                IpAddress ipAddress = new IpAddress();
-                ipAddress.setGeolocationDataId(savedGeolocationData.getId());
-                ipAddress.setIpAddress(ip);
-                ipAddressRepository.save(ipAddress);
-
-                UrlData urlData = new UrlData();
-                urlData.setUrl(urlAddress);
-                urlData.setGeolocationDataId(savedGeolocationData.getId());
-                urlDataRepository.save(urlData);
+                return savedGeolocationDataEntity;
             }
         } catch (UnknownHostException e) {
             throw new RuntimeException("Unable to resolve URL to IP address: " + urlAddress, e);

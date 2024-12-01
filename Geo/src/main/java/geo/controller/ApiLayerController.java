@@ -1,8 +1,10 @@
 package geo.controller;
 
+import geo.dto.GeolocationDataDTO;
 import geo.dto.IpRequest;
 import geo.dto.UrlRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import geo.service.GeolocationService;
 
@@ -17,19 +19,27 @@ public class ApiLayerController {
     }
 
 
-    @GetMapping("/ip")
-    public void getGeolocationByIp(@RequestBody IpRequest ipRequest) {
-       geolocationService.getByIp(ipRequest.ip());
+    @PostMapping("/ip")
+    public ResponseEntity<GeolocationDataDTO> getGeolocationByIp(@RequestBody IpRequest ipRequest) {
+       return geolocationService.getByIp(ipRequest.ip());
+    }
+
+    @PostMapping("/url")
+    public ResponseEntity<GeolocationDataDTO> getGeolocationByUrl(@RequestBody UrlRequest urlRequest) {
+        return geolocationService.getByUrl(urlRequest.url());
+    }
+
+    @PostMapping("/ip/add")
+    public ResponseEntity<GeolocationDataDTO> findAndSaveGeolocationByIp(@RequestBody IpRequest ipRequest) {
+       return geolocationService.findAndSaveByIp(ipRequest.ip());
+    }
+
+    @PostMapping("/url/add")
+    public ResponseEntity<GeolocationDataDTO> findAndSaveGeolocationByUrl(@RequestBody UrlRequest urlRequest) {
+       return geolocationService.findAndSaveByUrl(urlRequest.url());
     }
 
 
-    @PostMapping("generate/ip")
-    public void findAndSaveGeolocationByIp(@RequestBody IpRequest ipRequest) {
-        geolocationService.findAndSaveByIp(ipRequest.ip());
-    }
 
-    @PostMapping("generate/url")
-    public void findAndSaveGeolocationByUrl(@RequestBody UrlRequest urlRequest) {
-        geolocationService.findAndSaveByUrl(urlRequest.url());
-    }
+
 }
