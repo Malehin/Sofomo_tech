@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 public class GeolocationDataMapper {
     private final ObjectMapper objectMapper;
 
-
     public GeolocationDataEntity mapFromResponse(String response) {
         try {
             return objectMapper.readValue(response, GeolocationDataEntity.class);

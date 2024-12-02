@@ -3,19 +3,20 @@ package geo.controller;
 import geo.dto.GeolocationDataDTO;
 import geo.dto.IpRequest;
 import geo.dto.UrlRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import geo.service.GeolocationService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api")
 public class ApiLayerController {
 
     private final GeolocationService geolocationService;
 
-    @Autowired
+
     public ApiLayerController(GeolocationService geolocationService) {
         this.geolocationService = geolocationService;
     }

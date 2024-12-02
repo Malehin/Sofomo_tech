@@ -2,13 +2,11 @@ package geo.service;
 
 
 import geo.entity.GeolocationDataEntity;
-import geo.exception.EmptyApiResponseException;
 import geo.exception.UrlResolutionException;
 import geo.mapper.GeolocationDataMapper;
 import geo.repository.GeolocationDataRepository;
 import geo.repository.IpAddressRepository;
 import geo.repository.UrlDataRepository;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -86,16 +84,16 @@ class IpstackServiceTest {
     }
 
 
-    @Test
-    @Disabled
-    void shouldThrowExceptionWhenResponseIsBlank() {
-        // given
-        when(ipAddressRepository.existsByIpAddress(TEST_IP)).thenReturn(false);
-        // Have issues with correct mock restTemplate.getForObject, and I don't want to spend too much time on it
-        when(restTemplate.getForObject(any(), eq(String.class))).thenReturn("");
-        // when & then
-        assertThrows(EmptyApiResponseException.class, () -> ipstackService.getAndSaveGeolocationDataByIp(TEST_IP));
-    }
+//    @Test
+//    @Disabled
+//    void shouldThrowExceptionWhenResponseIsBlank() {
+//        // given
+//        when(ipAddressRepository.existsByIpAddress(TEST_IP)).thenReturn(false);
+//        // Have issues with correct mock restTemplate.getForObject, and I don't want to spend too much time on it
+//        when(restTemplate.getForObject(any(), eq(String.class))).thenReturn("");
+//        // when & then
+//        assertThrows(EmptyApiResponseException.class, () -> ipstackService.getAndSaveGeolocationDataByIp(TEST_IP));
+//    }
 
     @Test
     void shouldSuccessfullyGetAndSaveGeolocationDataByUrl() {
