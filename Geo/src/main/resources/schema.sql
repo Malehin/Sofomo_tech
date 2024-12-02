@@ -1,0 +1,28 @@
+DROP TABLE IF EXISTS URL_DATA;
+DROP TABLE IF EXISTS IP_ADDRESS;
+DROP TABLE IF EXISTS GEOLOCATION_DATA;
+
+CREATE TABLE GEOLOCATION_DATA (
+                                  ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                  LATITUDE DOUBLE NOT NULL,
+                                  LONGITUDE DOUBLE NOT NULL,
+                                  CITY VARCHAR(255),
+                                  REGION_NAME VARCHAR(255),
+                                  COUNTRY_NAME VARCHAR(255),
+                                  POSTAL_CODE VARCHAR(255),
+                                  CREATED TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IP_ADDRESS (
+                            ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+                            IP_ADDRESS VARCHAR(255) NOT NULL UNIQUE,
+                            GEOLOCATION_DATA_ID BIGINT NOT NULL,
+                            CONSTRAINT FK_IP_GEOLOCATION FOREIGN KEY (GEOLOCATION_DATA_ID) REFERENCES GEOLOCATION_DATA(ID) ON DELETE CASCADE
+);
+
+CREATE TABLE URL_DATA (
+                          ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+                          URL VARCHAR(2048) NOT NULL UNIQUE,
+                          GEOLOCATION_DATA_ID BIGINT NOT NULL,
+                          CONSTRAINT FK_URL_GEOLOCATION FOREIGN KEY (GEOLOCATION_DATA_ID) REFERENCES GEOLOCATION_DATA(ID) ON DELETE CASCADE
+);
