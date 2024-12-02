@@ -62,10 +62,14 @@ public class GeolocationService {
                 throw new GeolocationDataNotFoundException("Geolocation data not found for Ip: " + ipAddress);
             }
             return ResponseEntity.status(HttpStatus.OK).body(new GeolocationDataDTO(geolocationDataEntity));
+        } catch (GeolocationDataNotFoundException e) {
+            log.error("Geolocation data not found for IP: {}", ipAddress, e);
+            throw e;
         } catch (Exception e) {
             log.error("Error occurred while fetching geolocation data for IP: {}", ipAddress, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
     }
 
     public ResponseEntity<GeolocationDataDTO> findAndSaveByUrl(String urlAddress) {
@@ -75,6 +79,9 @@ public class GeolocationService {
                 throw new GeolocationDataNotFoundException("Geolocation data not found for Url: " + urlAddress);
             }
             return ResponseEntity.status(HttpStatus.OK).body(new GeolocationDataDTO(geolocationDataEntity));
+        } catch (GeolocationDataNotFoundException e) {
+            log.error("Geolocation data not found for Url: {}", urlAddress, e);
+            throw e;
         } catch (Exception e) {
             log.error("Error occurred while fetching geolocation data for URL: {}", urlAddress, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

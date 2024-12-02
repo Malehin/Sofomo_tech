@@ -32,25 +32,31 @@ public class IpstackService {
 
     @Transactional
     public GeolocationDataEntity getAndSaveGeolocationDataByIp(String ipAddress) {
+        log.info("Starting geolocation data retrieval for IP address: {}", ipAddress);
 
-        if(ipAddressRepository.existsByIpAddress(ipAddress)){
+        if (ipAddressRepository.existsByIpAddress(ipAddress)) {
             log.info("Data for IpAddress: {} Already exist in Database", ipAddress);
             return null;
-        } else{
+        } else {
             String url = IPSTACK_URL + ipAddress + "?access_key=" + IPSTACK_API_KEY;
             RestTemplate restTemplate = new RestTemplate();
             String response = restTemplate.getForObject(url, String.class);
 
-            if (response.isBlank()) {
+            if (response == null || response.isBlank()) {
+                log.error("API response is empty for IP: {}", ipAddress);
                 throw new EmptyApiResponseException("API response is empty for IP: " + ipAddress);
             }
 
             GeolocationDataEntity geolocationDataEntity = geolocationDataMapper.mapFromResponse(response);
             GeolocationDataEntity savedGeolocationDataEntity = geolocationDataRepository.save(geolocationDataEntity);
+            log.info("Saved geolocation data for IP address {} ", ipAddress);
+
             IpAddressEntity ipAddressEntity = new IpAddressEntity();
             ipAddressEntity.setGeolocationDataId(savedGeolocationDataEntity.getId());
             ipAddressEntity.setIpAddress(ipAddress);
             ipAddressRepository.save(ipAddressEntity);
+
+            log.info("Saved IP address for: {}", ipAddress);
 
             return savedGeolocationDataEntity;
         }
@@ -58,11 +64,13 @@ public class IpstackService {
 
     @Transactional
     public GeolocationDataEntity getAndSaveGeolocationDataByUrl(String urlAddress) {
+        log.info("Starting geolocation data retrieval for Url address: {}", urlAddress);
+
         try {
             InetAddress inetAddress = InetAddress.getByName(urlAddress);
             String ipAddress = inetAddress.getHostAddress();
 
-            if(urlDataRepository.existsByUrl(urlAddress)){
+            if (urlDataRepository.existsByUrl(urlAddress)) {
                 log.info("Data for UrlAddress: {} Already exist in Database", urlAddress);
                 return null;
             } else {
@@ -70,16 +78,21 @@ public class IpstackService {
                 RestTemplate restTemplate = new RestTemplate();
                 String response = restTemplate.getForObject(url, String.class);
 
-                if (response.isBlank()) {
+                if (response == null || response.isBlank()) {
+                    log.error("API response is empty for Url: {}", urlAddress);
                     throw new EmptyApiResponseException("API response is empty for IP: " + ipAddress);
                 }
 
                 GeolocationDataEntity geolocationDataEntity = geolocationDataMapper.mapFromResponse(response);
                 GeolocationDataEntity savedGeolocationDataEntity = geolocationDataRepository.save(geolocationDataEntity);
+                log.info("Saved geolocation data for Url address {} ", urlAddress);
+
                 UrlDataEntity urlDataEntity = new UrlDataEntity();
                 urlDataEntity.setUrl(urlAddress);
                 urlDataEntity.setGeolocationDataId(savedGeolocationDataEntity.getId());
                 urlDataRepository.save(urlDataEntity);
+
+                log.info("Saved Url address for: {}", urlAddress);
 
                 return savedGeolocationDataEntity;
             }
@@ -88,5 +101,4 @@ public class IpstackService {
         }
 
     }
-
 }
