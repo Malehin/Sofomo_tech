@@ -11,6 +11,8 @@ import geo.repository.IpAddressRepository;
 import geo.repository.UrlDataRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -23,7 +25,7 @@ import java.net.UnknownHostException;
 @AllArgsConstructor
 public class IpstackService {
     private static final String IPSTACK_URL = "https://api.ipstack.com/";
-    private static final String IPSTACK_API_KEY = "57dc58e5b56d3d570a2865346f72452b";
+    private static final String IPSTACK_API_KEY = "c380d3c4c95f8cacc6cec520d6182a67";
 
     private final GeolocationDataRepository geolocationDataRepository;
     private final IpAddressRepository ipAddressRepository;
@@ -31,6 +33,11 @@ public class IpstackService {
     private final UrlDataRepository urlDataRepository;
 
     @Transactional
+    @Retryable(
+            noRetryFor = {EmptyApiResponseException.class},
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 5000)
+    )
     public GeolocationDataEntity getAndSaveGeolocationDataByIp(String ipAddress) {
         log.info("Starting geolocation data retrieval for IP address: {}", ipAddress);
 
@@ -63,6 +70,11 @@ public class IpstackService {
     }
 
     @Transactional
+    @Retryable(
+            noRetryFor = {EmptyApiResponseException.class, UnknownHostException.class},
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 5000)
+    )
     public GeolocationDataEntity getAndSaveGeolocationDataByUrl(String urlAddress) {
         log.info("Starting geolocation data retrieval for Url address: {}", urlAddress);
 

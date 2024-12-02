@@ -18,7 +18,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+
+import java.net.UnknownHostException;
 
 @Slf4j
 @Service
@@ -30,6 +34,11 @@ public class GeolocationService {
     private final IpAddressRepository ipAddressRepository;
     private final UrlDataRepository urlDataRepository;
 
+    @Retryable(
+            noRetryFor = {IpAddressNotFoundException.class},
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 5000)
+    )
     public ResponseEntity<GeolocationDataDTO> getByIp(String ipAddress) {
         IpAddressEntity ipAddressEntity = ipAddressRepository.findByIpAddress(ipAddress);
         if (ipAddressEntity == null || ipAddressEntity.getGeolocationDataId() == null) {
@@ -42,6 +51,11 @@ public class GeolocationService {
         return ResponseEntity.status(HttpStatus.OK).body(new GeolocationDataDTO(geolocationDataEntity));
     }
 
+    @Retryable(
+            noRetryFor = {UrlAddressNotFoundException.class},
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 5000)
+    )
     public ResponseEntity<GeolocationDataDTO> getByUrl(String urlAddress) {
         UrlDataEntity urlDataEntity = urlDataRepository.findByUrl(urlAddress);
         if (urlDataEntity == null || urlDataEntity.getGeolocationDataId() == null) {
@@ -89,6 +103,11 @@ public class GeolocationService {
     }
 
     @Transactional
+    @Retryable(
+            noRetryFor = {GeolocationDataNotFoundException.class},
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 5000)
+    )
     public ResponseEntity<Void> deleteByUrl(String urlAddress) {
         UrlDataEntity urlDataEntity = urlDataRepository.findByUrl(urlAddress);
 
@@ -107,6 +126,11 @@ public class GeolocationService {
     }
 
     @Transactional
+    @Retryable(
+            noRetryFor = {GeolocationDataNotFoundException.class},
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 5000)
+    )
     public ResponseEntity<Void> deleteByIp(String ipAddress) {
         IpAddressEntity ipAddressEntity = ipAddressRepository.findByIpAddress(ipAddress);
 
