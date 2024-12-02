@@ -115,8 +115,8 @@ public class GeolocationService {
         }
 
         try {
-            geolocationDataRepository.deleteById(urlDataEntity.getGeolocationDataId());
             urlDataRepository.deleteById(urlDataEntity.getId());
+            geolocationDataRepository.deleteById(urlDataEntity.getGeolocationDataId());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -138,8 +138,8 @@ public class GeolocationService {
         }
 
         try {
-            geolocationDataRepository.deleteById(ipAddressEntity.getGeolocationDataId());
             ipAddressRepository.deleteById(ipAddressEntity.getId());
+            geolocationDataRepository.deleteById(ipAddressEntity.getGeolocationDataId());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
